@@ -4,12 +4,12 @@ import { FaceAnalysis } from "../types";
 const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
 
 export async function analyzeFace(imageBase64: string): Promise<FaceAnalysis> {
-  const prompt = "Analyze this face. Provide a rating out of 10 (decimal allowed), a breakdown of symmetry, skin clarity, proportions, and harmony (all 0-10), a list of 3-5 key features, an 'honest critique', and the 'best angle' for this face.";
+  const prompt = "Perform a geometric and aesthetic analysis of this face. Provide a rating out of 10. Breakdown the following metrics: Symmetry, Skin Clarity, Proportions, Harmony. List 3 key features. Write a short 'honest critique'. Suggest the 'best angle' for a photo.";
 
   const result = await ai.models.generateContent({
-    model: "gemini-3-flash-preview",
+    model: "gemini-flash-latest",
     config: {
-      systemInstruction: "You are an honest, objective aesthetic analyzer. You analyze facial symmetry, skin clarity, proportions, and overall harmony. You provide a rating out of 10. You must be truthful but professional. Avoid sugarcoating, but also avoid being needlessly mean.",
+      systemInstruction: "You are an objective, honest, and professional aesthetic analyzer. You provide clinical evaluations of facial acoustics and geometry. You must return a valid JSON object. Be truthful even if the rating is low, avoiding generic flattery. If no face is detected, provide a rating of 0 and note it in the critique.",
       responseMimeType: "application/json",
       responseSchema: {
         type: Type.OBJECT,
@@ -45,7 +45,11 @@ export async function analyzeFace(imageBase64: string): Promise<FaceAnalysis> {
     },
   });
 
-  const text = result.text || "";
+  const text = result.text;
+  if (!text) {
+    throw new Error("No analysis data received. Please try again with a clearer photo.");
+  }
+
   // Clean up potential markdown marks if the model didn't strictly follow responseMimeType
   const jsonMatch = text.match(/\{[\s\S]*\}/);
   const cleanJson = jsonMatch ? jsonMatch[0] : text;
@@ -54,6 +58,6 @@ export async function analyzeFace(imageBase64: string): Promise<FaceAnalysis> {
     return JSON.parse(cleanJson);
   } catch (e) {
     console.error("Failed to parse AI response:", text);
-    throw new Error("Invalid response format from AI");
+    throw new Error("Could not interpret AI analysis. Please try again.");
   }
 }

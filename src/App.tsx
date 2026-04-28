@@ -58,13 +58,21 @@ export default function App() {
   const handleAnalyze = async (image: string) => {
     setLoading(true);
     setError(null);
+    
+    // Check for API key (mostly for users exporting to Vercel)
+    if (!process.env.GEMINI_API_KEY) {
+      setError("GEMINI_API_KEY is not configured. Please add it to your environment variables.");
+      setLoading(false);
+      return;
+    }
+
     try {
       const base64 = image.split(',')[1];
       const result = await analyzeFace(base64);
       setAnalysis(result);
-    } catch (err) {
+    } catch (err: any) {
       console.error(err);
-      setError("AI analysis failed. Please try a clearer photo.");
+      setError(err.message || "AI analysis failed. Please try a clearer photo.");
     } finally {
       setLoading(false);
     }
