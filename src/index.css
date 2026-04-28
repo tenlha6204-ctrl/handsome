@@ -1,0 +1,47 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap');
+@import "tailwindcss";
+
+@theme {
+  --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, monospace;
+  
+  --color-scan-green: #00ff41;
+  --color-scan-red: #ff3131;
+  --color-scan-bg: #050505;
+}
+
+@layer base {
+  body {
+    @apply bg-scan-bg text-white font-sans antialiased overflow-x-hidden;
+    background-image: 
+      linear-gradient(rgba(0, 255, 65, 0.05) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(0, 255, 65, 0.05) 1px, transparent 1px);
+    background-size: 30px 30px;
+  }
+}
+
+@layer components {
+  .scanner-overlay {
+    @apply absolute inset-0 pointer-events-none border-2 border-scan-green/30;
+    background: linear-gradient(to bottom, transparent 50%, rgba(0, 255, 65, 0.1) 50%);
+    background-size: 100% 4px;
+  }
+
+  .scan-line {
+    @apply absolute w-full h-[2px] bg-scan-green shadow-[0_0_15px_#00ff41] z-10;
+    animation: scan 3s linear infinite;
+  }
+
+  @keyframes scan {
+    0% { top: 0; }
+    100% { top: 100%; }
+  }
+
+  .glass-card {
+    @apply bg-white/[0.02] backdrop-blur-md border border-white/10 rounded-xl overflow-hidden;
+  }
+
+  .terminal-text {
+    @apply font-mono text-scan-green uppercase tracking-tighter;
+  }
+}

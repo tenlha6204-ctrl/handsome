@@ -1,0 +1,6 @@
+{
+  "name": "FaceAudit AI",
+  "description": "An honest AI-powered face scanner that rates facial features and provides detailed aesthetic analysis.",
+  "requestFramePermissions": ["camera"],
+  "majorCapabilities": []
+}
